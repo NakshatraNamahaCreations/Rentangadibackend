@@ -1480,9 +1480,9 @@ class Quotations {
 
   // update quotation
   async updateQuotation1(req, res) {
-    const { quoteId, labourecharge, transportcharge, GrandTotal, adjustments } =
+    const { quoteId, labourecharge, transportcharge, GrandTotal, adjustments, GST,discount } =
       req.body;
-    console.log(labourecharge, transportcharge, GrandTotal, adjustments);
+    console.log(labourecharge, transportcharge, GrandTotal, adjustments,GST,discount );
 
     try {
       // Fetch the quotation by ID
@@ -1504,6 +1504,12 @@ class Quotations {
       }
       if (adjustments !== undefined) {
         quotation.adjustments = adjustments;
+      }
+       if (GST !== undefined) {
+        quotation.GST = GST;
+      }
+      if (discount !== undefined) {
+        quotation.discount = discount;
       }
       // Save the updated quotation
       const updatedQuotation = await quotation.save();
