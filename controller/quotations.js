@@ -562,6 +562,7 @@ class Quotations {
       adjustments,
       GrandTotal,
       status,
+      GST,discount
     } = req.body;
     console.log(
       quoteId,
@@ -569,6 +570,7 @@ class Quotations {
       transportcharge,
       adjustments,
       GrandTotal,
+      GST,discount,
       "efirwiu"
     );
     try {
@@ -592,6 +594,14 @@ class Quotations {
       if (GrandTotal !== undefined) {
         quotation.GrandTotal = GrandTotal;
       }
+      if (GST !== undefined) {
+        quotation.GST = GST;
+      }
+      if (discount !== undefined) {
+        quotation.discount = discount;
+      }
+
+
       if (status !== undefined) {
         if (["pending", "send"].includes(status)) {
           quotation.status = status; // Update status if valid
