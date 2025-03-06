@@ -240,6 +240,85 @@ class ProductManagement {
   //     return res.status(500).json({ error: "Unable to update the product" });
   //   }
   // }
+  // async updateProducts(req, res) {
+  //   try {
+  //     const ProductId = req.params.id;
+  //     const {
+  //       ProductName,
+  //       ProductCategory,
+  //       ProductSubcategory,
+  //       ProductDesc,
+  //       ProductFeature,
+  //       ProductPrice,
+  //       offerPrice,
+  //       ProductGst,
+  //       Productdetails,
+  //       qty,
+  //       maxGty,
+  //       ProductStock,
+  //       activeStatus,
+  //       Material,
+  //       ProductSize,
+  //       Color,
+  //       seater,
+  //     } = req.body;
+  
+  //     const files = req.files || [];
+  //     const uploadedFiles = {
+  //       ProductIcon: files[0]?.filename,
+  //       ProductImg1: files[1]?.filename,
+  //       ProductImg2: files[2]?.filename,
+  //       ProductImg3: files[3]?.filename,
+  //     };
+  
+  //     // Find the product by ID
+  //     const findProduct = await ProductManagementModel.findById(ProductId);
+  //     if (!findProduct) {
+  //       return res.status(404).json({ error: "No such record found" });
+  //     }
+  
+  //     // Update product fields conditionally
+  //     const updatedFields = {
+  //       ProductName: ProductName || findProduct.ProductName,
+  //       ProductCategory: ProductCategory || findProduct.ProductCategory,
+  //       ProductSubcategory: ProductSubcategory || findProduct.ProductSubcategory,
+  //       ProductFeature: ProductFeature || findProduct.ProductFeature,
+  //       ProductPrice: ProductPrice || findProduct.ProductPrice,
+  //       offerPrice: offerPrice || findProduct.offerPrice,
+  //       Productdetails: Productdetails || findProduct.Productdetails,
+  //       qty: qty || findProduct.qty,
+  //       maxGty: maxGty || findProduct.maxGty,
+  //       ProductStock: ProductStock || findProduct.ProductStock,
+  //       ProductDesc: ProductDesc || findProduct.ProductDesc,
+  //       ProductGst: ProductGst || findProduct.ProductGst,
+  //       activeStatus: activeStatus || findProduct.activeStatus,
+  //       Material: Material || findProduct.Material,
+  //       ProductSize: ProductSize || findProduct.ProductSize,
+  //       Color: Color || findProduct.Color,
+  //       seater: seater || findProduct.seater,
+  //       ProductIcon: uploadedFiles.ProductIcon || findProduct.ProductIcon,
+  //       ProductImg1: uploadedFiles.ProductImg1 || findProduct.ProductImg1,
+  //       ProductImg2: uploadedFiles.ProductImg2 || findProduct.ProductImg2,
+  //       ProductImg3: uploadedFiles.ProductImg3 || findProduct.ProductImg3,
+  //     };
+  
+  //     // Update product in the database
+  //     const updatedProduct = await ProductManagementModel.findByIdAndUpdate(
+  //       ProductId,
+  //       { $set: updatedFields },
+  //       { new: true }
+  //     );
+  //     console.log(updatedProduct)
+  //     return res.json({
+  //       message: "Product updated successfully",
+  //       data: updatedProduct,
+  //     });
+    
+  //   } catch (error) {
+  //     console.error("Error updating product:", error);
+  //     return res.status(500).json({ error: "Unable to update the product" });
+  //   }
+  // }
   async updateProducts(req, res) {
     try {
       const ProductId = req.params.id;
@@ -251,33 +330,21 @@ class ProductManagement {
         ProductFeature,
         ProductPrice,
         offerPrice,
-        ProductGst,
-        Productdetails,
         qty,
-        maxGty,
         ProductStock,
-        activeStatus,
         Material,
         ProductSize,
         Color,
         seater,
       } = req.body;
   
-      const files = req.files || [];
-      const uploadedFiles = {
-        ProductIcon: files[0]?.filename,
-        ProductImg1: files[1]?.filename,
-        ProductImg2: files[2]?.filename,
-        ProductImg3: files[3]?.filename,
-      };
-  
-      // Find the product by ID
+      // Find the existing product
       const findProduct = await ProductManagementModel.findById(ProductId);
       if (!findProduct) {
         return res.status(404).json({ error: "No such record found" });
       }
   
-      // Update product fields conditionally
+      // ✅ Handle single image update
       const updatedFields = {
         ProductName: ProductName || findProduct.ProductName,
         ProductCategory: ProductCategory || findProduct.ProductCategory,
@@ -285,24 +352,19 @@ class ProductManagement {
         ProductFeature: ProductFeature || findProduct.ProductFeature,
         ProductPrice: ProductPrice || findProduct.ProductPrice,
         offerPrice: offerPrice || findProduct.offerPrice,
-        Productdetails: Productdetails || findProduct.Productdetails,
         qty: qty || findProduct.qty,
-        maxGty: maxGty || findProduct.maxGty,
         ProductStock: ProductStock || findProduct.ProductStock,
         ProductDesc: ProductDesc || findProduct.ProductDesc,
-        ProductGst: ProductGst || findProduct.ProductGst,
-        activeStatus: activeStatus || findProduct.activeStatus,
         Material: Material || findProduct.Material,
         ProductSize: ProductSize || findProduct.ProductSize,
         Color: Color || findProduct.Color,
         seater: seater || findProduct.seater,
-        ProductIcon: uploadedFiles.ProductIcon || findProduct.ProductIcon,
-        ProductImg1: uploadedFiles.ProductImg1 || findProduct.ProductImg1,
-        ProductImg2: uploadedFiles.ProductImg2 || findProduct.ProductImg2,
-        ProductImg3: uploadedFiles.ProductImg3 || findProduct.ProductImg3,
+  
+        // ✅ Keep the old image if no new image is uploaded
+        ProductIcon: req.file ? req.file.filename : findProduct.ProductIcon,
       };
   
-      // Update product in the database
+      // ✅ Update product in the database
       const updatedProduct = await ProductManagementModel.findByIdAndUpdate(
         ProductId,
         { $set: updatedFields },
@@ -318,6 +380,7 @@ class ProductManagement {
       return res.status(500).json({ error: "Unable to update the product" });
     }
   }
+  
   
   async FindwithProductID(req, res) {
     try {
@@ -492,55 +555,7 @@ class ProductManagement {
 
 
 
-// Controller to get all products with inventory
-// async getProductsWithInventory(req, res) {
-//   try {
-//     // Fetch all products
-//     const products = await ProductManagementModel.find();
 
-//     // Fetch all inventory data
-//     const inventoryData = await InventoryModel.find();
-
-//     // Map inventory data to products
-//     const productsWithInventory = products.map((product) => {
-//       // Find inventory related to this product
-//       const relatedInventory = inventoryData.filter(
-//         (inventory) => inventory.productId === product._id.toString()
-//       );
-
-//       // Calculate total reserved and available stock
-//       const totalReservedQty = relatedInventory.reduce(
-//         (sum, inventory) => sum + (inventory.reservedQty || 0), // Default to 0 if undefined
-//         0
-//       );
-
-//       const totalAvailableQty = relatedInventory.reduce(
-//         (sum, inventory) => sum + (inventory.availableQty || 0), // Default to 0 if undefined
-//         0
-//       );
-
-//       // Attach inventory details to the product
-//       return {
-//         ...product.toObject(), // Convert Mongoose document to plain object
-//         inventory: relatedInventory,
-//         totalReservedQty,
-//         totalAvailableQty,
-//       };
-//     });
-
-//     // Respond with the products and their inventory
-//     res.status(200).json({
-//       success: true,
-//       data: productsWithInventory,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching products with inventory:", error.message);
-//     res.status(500).json({
-//       success: false,
-//       error: "Failed to fetch products with inventory data.",
-//     });
-//   }
-// }
 async getProductsWithInventory(req, res) {
   try {
     // Fetch all products
