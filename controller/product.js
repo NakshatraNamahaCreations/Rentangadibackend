@@ -1,5 +1,6 @@
 const ProductManagementModel = require("../model/product");
 const InventoryModel = require("../model/inventory");
+const XLSX = require("xlsx");
 
 const generateSKU = () => {
   const chars = '0123456789'; 
@@ -610,7 +611,28 @@ async getProductsWithInventory(req, res) {
   }
 }
 
+// bulkupload
+async addServicesViaExcel (req, res) {
+  const productData = req.body;
 
+  // Ensure we receive an array of services
+  if (!Array.isArray(productData) || productData.length === 0) {
+    return res
+      .status(400)
+      .json({ error: "No data provided or invalid format" });
+  }
+  try {
+    const productList = await ProductManagementModel.insertMany(productData);
+    if (productList.length > 0) {
+      return res.status(200).json({ success: "Product Added", productList });
+    } else {
+      return res.status(400).json({ error: "Failed to add product" });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 
 }
