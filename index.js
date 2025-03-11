@@ -23,6 +23,7 @@ app.use(cookieParser());
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
 
 const payu = require("./route/payu");
 const category = require("./route/category");

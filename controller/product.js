@@ -3,18 +3,16 @@ const InventoryModel = require("../model/inventory");
 const XLSX = require("xlsx");
 
 const generateSKU = () => {
-  const chars = '0123456789'; 
-  let sku = 'SKU'; 
-  for (let i = 0; i < 3; i++) { // Generate 3 random digits
+  const chars = "0123456789";
+  let sku = "SKU";
+  for (let i = 0; i < 3; i++) {
+    // Generate 3 random digits
     sku += chars[Math.floor(Math.random() * chars.length)];
   }
   return sku;
 };
 
-
-
 class ProductManagement {
-
   async addProductManagement(req, res) {
     try {
       let {
@@ -34,31 +32,31 @@ class ProductManagement {
         Material,
         ProductSize,
         Color,
-        seater, 
+        seater,
         ProductImg1,
         ProductImg2,
         ProductImg3,
-        ProductSKU
-
+        ProductSKU,
       } = req.body;
       let file = req.files[0]?.filename;
       let file1 = req.files[1]?.filename;
       let file2 = req.files[2]?.filename;
       let file3 = req.files[3]?.filename;
 
-      const product = await ProductManagementModel.findOne().sort({ ProductSKU: -1 }).exec();
+      const product = await ProductManagementModel.findOne()
+        .sort({ ProductSKU: -1 })
+        .exec();
       const lastProductSku = product ? product.ProductSKU : "SKU001";
-      
-      console.log("lastProductSku",lastProductSku)
+
+      console.log("lastProductSku", lastProductSku);
       // Extract the numeric part and increment it
       const numericPart = parseInt(lastProductSku.slice(3), 10) + 1;
-      console.log("numericPart",numericPart)
-      
+      console.log("numericPart", numericPart);
+
       // Pad the number with leading zeros to ensure it stays 3 digits
       const newProductSKU = "SKU" + numericPart.toString().padStart(3, "0");
-      
-      console.log(newProductSKU,"newProductSKU"); // Outputs SKU002, SKU003, etc.
-      
+
+      console.log(newProductSKU, "newProductSKU"); // Outputs SKU002, SKU003, etc.
 
       let add = new ProductManagementModel({
         ProductName,
@@ -70,7 +68,7 @@ class ProductManagement {
         ProductGst,
         Productdetails,
         ProductStock,
-        StockAvailable:ProductStock,
+        StockAvailable: ProductStock,
         qty,
         Material,
         ProductSize,
@@ -85,7 +83,7 @@ class ProductManagement {
         activeStatus,
         ProductSKU: newProductSKU,
       });
-  // console.log(newProductSKU,"ProductSKU")
+      // console.log(newProductSKU,"ProductSKU")
       add.save().then((data) => {
         return res
           .status(200)
@@ -121,7 +119,7 @@ class ProductManagement {
       ProductImg3,
     } = req.body;
     let file = req.files && req.files[0]?.filename;
-    
+
     try {
       let data = await ProductManagementModel.findOneAndUpdate(
         { _id: id },
@@ -189,9 +187,9 @@ class ProductManagement {
   //     } = req.body; // Changed from req.params to req.body assuming form-data or JSON body
 
   //     let file = req.files && req.files[0]?.filename; // Check if req.files exists first
-  //     let file1 = req.files && req.files[1]?.filename; 
-  //     let file2 = req.files && req.files[2]?.filename; 
-  //     let file3 = req.files && req.files[3]?.filename; 
+  //     let file1 = req.files && req.files[1]?.filename;
+  //     let file2 = req.files && req.files[2]?.filename;
+  //     let file3 = req.files && req.files[3]?.filename;
   //     const findProduct = await ProductManagementModel.findOne({
   //       _id: ProductId,
   //     });
@@ -263,7 +261,7 @@ class ProductManagement {
   //       Color,
   //       seater,
   //     } = req.body;
-  
+
   //     const files = req.files || [];
   //     const uploadedFiles = {
   //       ProductIcon: files[0]?.filename,
@@ -271,13 +269,13 @@ class ProductManagement {
   //       ProductImg2: files[2]?.filename,
   //       ProductImg3: files[3]?.filename,
   //     };
-  
+
   //     // Find the product by ID
   //     const findProduct = await ProductManagementModel.findById(ProductId);
   //     if (!findProduct) {
   //       return res.status(404).json({ error: "No such record found" });
   //     }
-  
+
   //     // Update product fields conditionally
   //     const updatedFields = {
   //       ProductName: ProductName || findProduct.ProductName,
@@ -302,7 +300,7 @@ class ProductManagement {
   //       ProductImg2: uploadedFiles.ProductImg2 || findProduct.ProductImg2,
   //       ProductImg3: uploadedFiles.ProductImg3 || findProduct.ProductImg3,
   //     };
-  
+
   //     // Update product in the database
   //     const updatedProduct = await ProductManagementModel.findByIdAndUpdate(
   //       ProductId,
@@ -314,7 +312,7 @@ class ProductManagement {
   //       message: "Product updated successfully",
   //       data: updatedProduct,
   //     });
-    
+
   //   } catch (error) {
   //     console.error("Error updating product:", error);
   //     return res.status(500).json({ error: "Unable to update the product" });
@@ -338,40 +336,45 @@ class ProductManagement {
         Color,
         seater,
       } = req.body;
-  
+
       // Find the existing product
       const findProduct = await ProductManagementModel.findById(ProductId);
       if (!findProduct) {
         return res.status(404).json({ error: "No such record found" });
       }
-  
+
       // ✅ Handle single image update
       const updatedFields = {
-        ProductName: ProductName || findProduct.ProductName,
-        ProductCategory: ProductCategory || findProduct.ProductCategory,
-        ProductSubcategory: ProductSubcategory || findProduct.ProductSubcategory,
-        ProductFeature: ProductFeature || findProduct.ProductFeature,
-        ProductPrice: ProductPrice || findProduct.ProductPrice,
-        offerPrice: offerPrice || findProduct.offerPrice,
-        qty: qty || findProduct.qty,
-        ProductStock: ProductStock || findProduct.ProductStock,
-        ProductDesc: ProductDesc || findProduct.ProductDesc,
-        Material: Material || findProduct.Material,
-        ProductSize: ProductSize || findProduct.ProductSize,
-        Color: Color || findProduct.Color,
-        seater: seater || findProduct.seater,
-  
+        ProductName: ProductName ?? findProduct.ProductName,
+        ProductCategory: ProductCategory ?? findProduct.ProductCategory,
+        ProductSubcategory:
+          ProductSubcategory ?? findProduct.ProductSubcategory,
+        ProductFeature: ProductFeature ?? findProduct.ProductFeature,
+        ProductPrice: ProductPrice ?? findProduct.ProductPrice,
+        offerPrice: offerPrice ?? findProduct.offerPrice,
+        qty: qty ?? findProduct.qty,
+        ProductStock: ProductStock ?? findProduct.ProductStock,
+        ProductDesc: ProductDesc ?? findProduct.ProductDesc,
+        Material: Material ?? findProduct.Material,
+        ProductSize: ProductSize ?? findProduct.ProductSize,
+        Color: Color ?? findProduct.Color,
+        seater: seater ?? findProduct.seater,
+
         // ✅ Keep the old image if no new image is uploaded
         ProductIcon: req.file ? req.file.filename : findProduct.ProductIcon,
       };
-  
+
+      Object.keys(updatedFields).forEach(
+        (key) => updatedFields[key] === undefined && delete updatedFields[key]
+      );
+
       // ✅ Update product in the database
       const updatedProduct = await ProductManagementModel.findByIdAndUpdate(
         ProductId,
         { $set: updatedFields },
         { new: true }
       );
-  
+
       return res.json({
         message: "Product updated successfully",
         data: updatedProduct,
@@ -381,8 +384,7 @@ class ProductManagement {
       return res.status(500).json({ error: "Unable to update the product" });
     }
   }
-  
-  
+
   async FindwithProductID(req, res) {
     try {
       const id = req.params.id;
@@ -477,7 +479,7 @@ class ProductManagement {
 
   async quoteProduct(req, res) {
     try {
-      let Product = await ProductManagementModel.find({})
+      let Product = await ProductManagementModel.find({});
       // .select(
       //   "ProductName ProductPrice offerPrice ProductSKU"
       // );
@@ -504,12 +506,12 @@ class ProductManagement {
         },
         {
           $addFields: {
-            latestCreatedAt: { $ifNull: ["$createdAt", new Date(0)] }
-          }
+            latestCreatedAt: { $ifNull: ["$createdAt", new Date(0)] },
+          },
         },
         {
-          $sort: { latestCreatedAt: -1 }
-        }
+          $sort: { latestCreatedAt: -1 },
+        },
       ]);
       if (Data) {
         return res.json({ ProductsData: Data });
@@ -554,91 +556,82 @@ class ProductManagement {
     return res.json({ success: "Successfully" });
   }
 
+  async getProductsWithInventory(req, res) {
+    try {
+      // Fetch all products
+      const products = await ProductManagementModel.find();
 
+      // Fetch all inventory data
+      const inventoryData = await InventoryModel.find();
 
+      // Create a map of product IDs to product names for quick lookup
+      const productMap = products.reduce((map, product) => {
+        map[product._id.toString()] = product.ProductName; // Map product ID to ProductName
+        return map;
+      }, {});
 
-async getProductsWithInventory(req, res) {
-  try {
-    // Fetch all products
-    const products = await ProductManagementModel.find();
+      // Enrich inventory data with product names
+      const enrichedInventoryData = inventoryData.map((inventory) => ({
+        ...inventory.toObject(),
+        productName: productMap[inventory.productId] || "Unknown Product", // Attach product name
+      }));
 
-    // Fetch all inventory data
-    const inventoryData = await InventoryModel.find();
+      // Map inventory data to products
+      const productsWithInventory = products.map((product) => {
+        // Find inventory related to this product
+        const relatedInventory = enrichedInventoryData.filter(
+          (inventory) => inventory.productId === product._id.toString()
+        );
 
-    // Create a map of product IDs to product names for quick lookup
-    const productMap = products.reduce((map, product) => {
-      map[product._id.toString()] = product.ProductName; // Map product ID to ProductName
-      return map;
-    }, {});
+        // Select the first availableQty from inventory or default to 0
+        const availableQty =
+          relatedInventory.length > 0 ? relatedInventory[0].availableQty : 0;
 
-    // Enrich inventory data with product names
-    const enrichedInventoryData = inventoryData.map((inventory) => ({
-      ...inventory.toObject(),
-      productName: productMap[inventory.productId] || "Unknown Product", // Attach product name
-    }));
+        // Attach inventory details to the product
+        return {
+          ...product.toObject(), // Convert Mongoose document to plain object
+          inventory: relatedInventory,
+          availableQty, // Attach the first availableQty value
+        };
+      });
 
-    // Map inventory data to products
-    const productsWithInventory = products.map((product) => {
-      // Find inventory related to this product
-      const relatedInventory = enrichedInventoryData.filter(
-        (inventory) => inventory.productId === product._id.toString()
-      );
-
-      // Select the first availableQty from inventory or default to 0
-      const availableQty = relatedInventory.length > 0
-        ? relatedInventory[0].availableQty
-        : 0;
-
-      // Attach inventory details to the product
-      return {
-        ...product.toObject(), // Convert Mongoose document to plain object
-        inventory: relatedInventory,
-        availableQty, // Attach the first availableQty value
-      };
-    });
-
-    // Respond with the products and their inventory
-    res.status(200).json({
-      success: true,
-      data: productsWithInventory,
-    });
-  } catch (error) {
-    console.error("Error fetching products with inventory:", error.message);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch products with inventory data.",
-    });
-  }
-}
-
-// bulkupload
-async addServicesViaExcel (req, res) {
-  const productData = req.body;
-
-  // Ensure we receive an array of services
-  if (!Array.isArray(productData) || productData.length === 0) {
-    return res
-      .status(400)
-      .json({ error: "No data provided or invalid format" });
-  }
-  try {
-    const productList = await ProductManagementModel.insertMany(productData);
-    if (productList.length > 0) {
-      return res.status(200).json({ success: "Product Added", productList });
-    } else {
-      return res.status(400).json({ error: "Failed to add product" });
+      // Respond with the products and their inventory
+      res.status(200).json({
+        success: true,
+        data: productsWithInventory,
+      });
+    } catch (error) {
+      console.error("Error fetching products with inventory:", error.message);
+      res.status(500).json({
+        success: false,
+        error: "Failed to fetch products with inventory data.",
+      });
     }
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ error: "Internal server error" });
   }
-};
 
+  // bulkupload
+  async addServicesViaExcel(req, res) {
+    const productData = req.body;
 
+    // Ensure we receive an array of services
+    if (!Array.isArray(productData) || productData.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "No data provided or invalid format" });
+    }
+    try {
+      const productList = await ProductManagementModel.insertMany(productData);
+      if (productList.length > 0) {
+        return res.status(200).json({ success: "Product Added", productList });
+      } else {
+        return res.status(400).json({ error: "Failed to add product" });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
 }
-
-
-
 
 const ProductManagemntController = new ProductManagement();
 module.exports = ProductManagemntController;
