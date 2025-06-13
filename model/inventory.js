@@ -14,10 +14,13 @@ const InventorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  slot: {
-    type: String, // e.g., "Slot 1", "Slot 2", "Slot 3"
-    required: true,
+  price: {
+    type: Number,
   },
+  // slot: {
+  //   type: String,
+  //   required: true,
+  // },
   reservedQty: {
     type: Number,
     default: 0,
@@ -27,6 +30,7 @@ const InventorySchema = new mongoose.Schema({
     required: true,
   },
 });
+
 
 const Inventory = mongoose.model("Inventory", InventorySchema);
 module.exports = Inventory;

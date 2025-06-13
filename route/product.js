@@ -21,16 +21,22 @@ router.post(
   ProductManagemntController.addProductManagement
 );
 router.get("/getProducts", ProductManagemntController.getProductManagement);
+router.get("/product-details/:id", ProductManagemntController.getProductById);
 router.get(
   "/getProductsInventory",
   ProductManagemntController.getProductforInventory
 );
-router.post(
+// router.put(
+//   "/editProducts/:id",
+//   ProductManagemntController.editProductManagement
+// );
+router.put(
   "/editProducts/:id",
+  upload.any(), // Make sure this is present!
   ProductManagemntController.editProductManagement
 );
 
-router.post(
+router.delete(
   "/deleteProducts/:id",
   ProductManagemntController.postdeleteProductManagement
 );
@@ -64,7 +70,7 @@ router.get(
 );
 
 router.get("/products-with-inventory", ProductManagemntController.getProductsWithInventory);
-router.post("/bulkuploadproduct",ProductManagemntController.addServicesViaExcel)
+router.post("/bulkuploadproduct", ProductManagemntController.addServicesViaExcel)
 
 
 module.exports = router;

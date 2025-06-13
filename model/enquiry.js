@@ -7,6 +7,10 @@ const EnquirySchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    clientId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
     endDate: {
       type: String,
       require: true,
@@ -48,6 +52,7 @@ const EnquirySchema = new mongoose.Schema(
       type: Number,
       require: true,
     },
+
     adjustments: {
       type: Number,
     },

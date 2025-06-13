@@ -1,6 +1,7 @@
 const ProductManagementModel = require("../model/product");
 const InventoryModel = require("../model/inventory");
 const XLSX = require("xlsx");
+const { default: mongoose } = require("mongoose");
 
 const generateSKU = () => {
   const chars = "0123456789";
@@ -36,27 +37,44 @@ class ProductManagement {
         ProductImg1,
         ProductImg2,
         ProductImg3,
-        ProductSKU,
+        // ProductSKU,
       } = req.body;
       let file = req.files[0]?.filename;
       let file1 = req.files[1]?.filename;
       let file2 = req.files[2]?.filename;
       let file3 = req.files[3]?.filename;
 
-      const product = await ProductManagementModel.findOne()
-        .sort({ ProductSKU: -1 })
-        .exec();
-      const lastProductSku = product ? product.ProductSKU : "SKU001";
+      console.log(ProductName,
+        ProductCategory,
+        ProductSubcategory,
+        ProductDesc,
+        ProductFeature,
+        ProductPrice,
+        offerPrice,
+        ProductGst,
+        Productdetails,
+        qty,
+        minqty,
+        ProductStock,
+        activeStatus,
+        Material,
+        ProductSize,
+        Color,
+        seater, file, "etst")
+      // const product = await ProductManagementModel.findOne()
+      //   .sort({ ProductSKU: -1 })
+      //   .exec();
+      // const lastProductSku = product ? product.ProductSKU : "SKU001";
 
-      console.log("lastProductSku", lastProductSku);
+      // console.log("lastProductSku", lastProductSku);
       // Extract the numeric part and increment it
-      const numericPart = parseInt(lastProductSku.slice(3), 10) + 1;
-      console.log("numericPart", numericPart);
+      // const numericPart = parseInt(lastProductSku.slice(3), 10) + 1;
+      // console.log("numericPart", numericPart);
 
       // Pad the number with leading zeros to ensure it stays 3 digits
-      const newProductSKU = "SKU" + numericPart.toString().padStart(3, "0");
+      // const newProductSKU = "SKU" + numericPart.toString().padStart(3, "0");
 
-      console.log(newProductSKU, "newProductSKU"); // Outputs SKU002, SKU003, etc.
+      // console.log(newProductSKU, "newProductSKU"); // Outputs SKU002, SKU003, etc.
 
       let add = new ProductManagementModel({
         ProductName,
@@ -81,20 +99,85 @@ class ProductManagement {
         ProductImg2: file2,
         ProductImg3: file3,
         activeStatus,
-        ProductSKU: newProductSKU,
+        // ProductSKU: newProductSKU,
       });
-      // console.log(newProductSKU,"ProductSKU")
+      console.log()
       add.save().then((data) => {
         return res
           .status(200)
-          .json({ success: "User added successfully", Product: data });
+          .json({ success: "User added successfully", data });
       });
+
     } catch (error) {
       return res.status(500).json({ error: "something went wrong" });
     }
   }
 
-  //edit ProductManagement
+  // //edit ProductManagement
+  // async editProductManagement(req, res) {
+  //   let id = req.params.id;
+  //   let {
+  //     ProductName,
+  //     ProductCategory,
+  //     ProductSubcategory,
+  //     ProductDesc,
+  //     ProductFeature,
+  //     ProductPrice,
+  //     ProductGst,
+  //     Productdetails,
+  //     qty,
+  //     maxGty,
+  //     ProductStock,
+  //     activeStatus,
+  //     Material,
+  //     ProductSize,
+  //     Color,
+  //     seater,
+  //     ProductImg1,
+  //     ProductImg2,
+  //     ProductImg3,
+  //   } = req.body;
+  //   let file = req.files && req.files[0]?.filename;
+
+  //   try {
+  //     let data = await ProductManagementModel.findOneAndUpdate(
+  //       { _id: id },
+  //       {
+  //         ProductName,
+  //         ProductCategory,
+  //         ProductSubcategory,
+  //         ProductDesc,
+  //         ProductFeature,
+  //         ProductPrice,
+  //         ProductGst,
+  //         Productdetails,
+  //         qty,
+  //         maxGty,
+  //         ProductStock,
+  //         activeStatus,
+  //         Material,
+  //         ProductSize,
+  //         Color,
+  //         seater,
+  //         ProductImg1,
+  //         ProductImg2,
+  //         ProductImg3,
+  //       },
+  //       { new: true } // Make sure to include this to return the updated document
+  //     );
+
+  //     if (data) {
+  //       return res.json({ success: "Updated", Product: data });
+  //     } else {
+  //       return res
+  //         .status(404)
+  //         .json({ success: false, message: "Data not found" });
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     return res.status(500).json({ success: false, message: "Server error" });
+  //   }
+  // }
   async editProductManagement(req, res) {
     let id = req.params.id;
     let {
@@ -117,34 +200,41 @@ class ProductManagement {
       ProductImg1,
       ProductImg2,
       ProductImg3,
+      minqty, // add if needed
     } = req.body;
     let file = req.files && req.files[0]?.filename;
+
+    let updateObj = {
+      ProductName,
+      ProductCategory,
+      ProductSubcategory,
+      ProductDesc,
+      ProductFeature,
+      ProductPrice,
+      ProductGst,
+      Productdetails,
+      qty,
+      maxGty,
+      ProductStock,
+      activeStatus,
+      Material,
+      ProductSize,
+      Color,
+      seater,
+      ProductImg1,
+      ProductImg2,
+      ProductImg3,
+      minqty,
+    };
+    if (file) {
+      updateObj.ProductIcon = file;
+    }
 
     try {
       let data = await ProductManagementModel.findOneAndUpdate(
         { _id: id },
-        {
-          ProductName,
-          ProductCategory,
-          ProductSubcategory,
-          ProductDesc,
-          ProductFeature,
-          ProductPrice,
-          ProductGst,
-          Productdetails,
-          qty,
-          maxGty,
-          ProductStock,
-          activeStatus,
-          Material,
-          ProductSize,
-          Color,
-          seater,
-          ProductImg1,
-          ProductImg2,
-          ProductImg3,
-        },
-        { new: true } // Make sure to include this to return the updated document
+        updateObj,
+        { new: true }
       );
 
       if (data) {
@@ -159,6 +249,7 @@ class ProductManagement {
       return res.status(500).json({ success: false, message: "Server error" });
     }
   }
+
 
   // async updateProducts(req, res) {
   //   try {
@@ -459,6 +550,33 @@ class ProductManagement {
         .json({ message: "Internal server error.", error: error.message });
     }
   }
+  async getProductById(req, res) {
+    const { id } = req.params;
+
+    try {
+      // Check if ID is valid
+      if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid product ID format." });
+      }
+
+      const product = await ProductManagementModel.findById(id);
+
+      if (product) {
+        console.log("Product found:", product);
+        return res.status(200).json({ product });
+      } else {
+        return res.status(404).json({ message: "Product not found." });
+      }
+
+    } catch (error) {
+      console.error("Error in getProductById:", error);
+      return res.status(500).json({
+        message: "Internal server error.",
+        error: error.message,
+      });
+    }
+  }
+
 
   async getProductforInventory(req, res) {
     try {
