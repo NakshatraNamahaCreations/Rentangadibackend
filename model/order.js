@@ -33,12 +33,28 @@ const SlotSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
+      productQuoteDate: {
+        type: String,
+        required: true,
+      },
+      productEndDate: {
+        type: String,
+        required: true,
+      },
+      productSlot: {
+        type: String,
+        required: true,
+      },
     },
   ],
 });
 
 const orderSchema = new mongoose.Schema({
   quoteId: {
+    type: String,
+    require: true,
+  },
+  invoiceId:{
     type: String,
     require: true,
   },

@@ -168,7 +168,7 @@ class Inventory {
         //   StockAvailable: product.StockAvailable,
         // };
 
-        console.log("inventoryEntries: ", inventoryEntries)
+        // console.log("inventoryEntries: ", inventoryEntries)
 
         // Calculate total reserved quantity from the overlapping inventory
         const totalReserved = inventoryEntries.reduce(
@@ -184,8 +184,8 @@ class Inventory {
           availableStock = Math.max(product.ProductStock - totalReserved, 0); // Ensure no negative stock
         }
 
-        console.log(`totalReserved ${product}`, totalReserved)
-        console.log(`available stock ${product}`, availableStock )
+        // console.log(`totalReserved ${product}`, totalReserved)
+        // console.log(`available stock ${product}`, availableStock )
 
         // Returning the product details with calculated available stock
         return {
